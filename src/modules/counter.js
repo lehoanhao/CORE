@@ -1,0 +1,103 @@
+import axios from 'axios';
+export const INCREMENT_REQUESTED = 'counter/INCREMENT_REQUESTED'
+export const INCREMENT = 'counter/INCREMENT'
+export const DECREMENT_REQUESTED = 'counter/DECREMENT_REQUESTED'
+export const DECREMENT = 'counter/DECREMENT'
+const fullLang = {
+  "en" : "en_US",
+  "ja" : "ja_JP"
+}
+const initialState = {
+  data: [],
+  count: 0,
+  isIncrementing: false,
+  isDecrementing: false
+}
+
+export default (state = initialState, action) => {
+  switch (action.type) {
+    case INCREMENT_REQUESTED:
+      return {
+        ...state,
+        isIncrementing: true
+      }
+
+    case INCREMENT:
+      return {
+        ...state,
+        count: state.count + 1,
+        isIncrementing: !state.isIncrementing,
+        data: action.data
+      }
+
+    case DECREMENT_REQUESTED:
+      return {
+        ...state,
+        isDecrementing: true
+      }
+
+    case DECREMENT:
+      return {
+        ...state,
+        count: state.count - 1,
+        isDecrementing: !state.isDecrementing
+      }
+
+    default:
+      return state
+  }
+}
+
+export const increment = () => {
+  return dispatch => {
+    dispatch({
+      type: INCREMENT_REQUESTED
+    })
+
+    dispatch({
+      type: INCREMENT
+    })
+  }
+}
+
+export const incrementAsync = (param) => {
+  console.log(param)
+  return dispatch => {
+    dispatch({
+      type: INCREMENT_REQUESTED
+    })
+    axios.get(`http://ddragon.leagueoflegends.com/cdn/6.24.1/data/${fullLang[param]}/champion.json `)
+    .then(res => {
+      dispatch({
+        type: INCREMENT,
+        data: res.data
+      })
+    })
+  }
+}
+
+export const decrement = () => {
+  return dispatch => {
+    dispatch({
+      type: DECREMENT_REQUESTED
+    })
+
+    dispatch({
+      type: DECREMENT
+    })
+  }
+}
+
+export const decrementAsync = () => {
+  return dispatch => {
+    dispatch({
+      type: DECREMENT_REQUESTED
+    })
+
+    return setTimeout(() => {
+      dispatch({
+        type: DECREMENT
+      })
+    }, 3000)
+  }
+}
